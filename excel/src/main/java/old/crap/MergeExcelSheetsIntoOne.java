@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by tsv on 23.07.15.
+ * 23.07.15
  */
 public class MergeExcelSheetsIntoOne {
     public static void main(String[] args) throws IOException {

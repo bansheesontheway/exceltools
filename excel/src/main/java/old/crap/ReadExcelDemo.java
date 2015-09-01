@@ -10,7 +10,7 @@ import java.io.FileInputStream;
 import java.util.Iterator;
 
 /**
- * Created by tsv on 23.07.15.
+ * 23.07.15
  */
 public class ReadExcelDemo {
     public static void main(String[] args) {

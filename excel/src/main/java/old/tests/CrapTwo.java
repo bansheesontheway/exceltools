@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * Created by tsv on 10.08.15.
+ * 10.08.15
  */
 public class CrapTwo {
     public static void main(String[] args) {

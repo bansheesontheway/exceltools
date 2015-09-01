@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Created by tsv on 23.07.15.
+ * 23.07.15
  */
 public class ArrayListSerialization {
     public static void main(String[] args) {

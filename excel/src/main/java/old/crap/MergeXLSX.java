@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Created by tsv on 23.07.15.
+ * 23.07.15
  */
 public class MergeXLSX {
     public static void main(String[] args) throws IOException {
@@ -16,6 +16,7 @@ public class MergeXLSX {
         List<FileInputStream> fileInputStreams = listFileArray(folder);
         mergeExcelFiles(resultFile, listFileArray(folder));
     }
+
     public static List<FileInputStream> listFileArray(String folder) throws FileNotFoundException {
 
         File dir = new File(folder);
@@ -36,6 +37,7 @@ public class MergeXLSX {
         }
         return fileNamesWithPaths;
     }
+
     public static void mergeExcelFiles(File file, List<FileInputStream> list) throws IOException {
         HSSFWorkbook book = new HSSFWorkbook();
         HSSFSheet sheet = book.createSheet(file.getName());

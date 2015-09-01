@@ -1,7 +1,7 @@
 package old.tests;
 
 /**
- * Created by tsv on 10.08.15.
+ * 10.08.15
  */
 public class StringMatcher {
     public static void main(String[] args) {

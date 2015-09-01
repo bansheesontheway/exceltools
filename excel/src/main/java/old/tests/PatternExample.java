@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by tsv on 10.08.15.
+ * 10.08.15
  */
 public class PatternExample {
     public static void main(String[] args) {
