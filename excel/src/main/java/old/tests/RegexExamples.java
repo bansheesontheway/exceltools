@@ -46,8 +46,8 @@ public class RegexExamples {
         // using Matcher.replaceFirst() and replaceAll() methods
 //        pattern = Pattern.compile("1*2");
 //        matcher = pattern.matcher("11234512678");
-//        System.out.println("Using replaceAll: " + matcher.replaceAll("_"));
-//        System.out.println("Using replaceFirst: " + matcher.replaceFirst("_"));
+        System.out.println("Using replaceAll: " + matcher.replaceAll("\n"));
+        System.out.println("Using replaceFirst: " + matcher.replaceFirst("_"));
     }
 
 

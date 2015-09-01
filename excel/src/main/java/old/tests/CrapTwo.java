@@ -16,7 +16,9 @@ public class CrapTwo {
 //        String as = Arrays.asList(array).get(1);
         String temp[] = myString5.replaceAll("(^\\++)?(\\+)?(\\+*)?", "$2").split("\\+");
         System.out.println(Arrays.asList(temp));
-        Arrays.asList(array).stream().forEach(s -> System.out.println(s));
+        Arrays.asList(array).stream().forEach((String s) -> {
+            System.out.println(s+"\n");
+        });
     }
 
 }

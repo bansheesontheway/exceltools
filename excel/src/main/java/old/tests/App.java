@@ -12,20 +12,77 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class App {
     static final DataFormatter DF = new DataFormatter();
     public static String testfile = "C:\\test\\24.07.2015\\Миколаїв.xlsx";
+    private static final long MEGABYTE = 1024L * 1024L;
+
+    public static long bytesToMegabytes(long bytes) {
+        return bytes / MEGABYTE;
+    }
+
+    public static void memoryUsed() {
+        Runtime runtime = Runtime.getRuntime();
+        long memory = runtime.totalMemory() - runtime.freeMemory();
+        System.out.println("Used memory is bytes: " + memory);
+        System.out.println("Used memory is megabytes: " + bytesToMegabytes(memory));
+    }
 
     public static void main(String[] args) throws InvalidFormatException, IOException {
         ArrayList<String> firstColumn = new ArrayList<>();
         ArrayList<String> firstColumnSplitted = new ArrayList<>();
-        openDocumentAndIterateThroughFirstColumn(testfile, firstColumn);
-        System.out.println(Arrays.asList("firstColumn normal" + firstColumn));
-        for (int i = 0; i < firstColumn.size(); i++) {
-            String splitPattern = "\\(|км" + ", " + "\\d\\)$";
-            String s = firstColumn.get(i);
-            System.out.println(s.split(splitPattern));
+        InputStream fileInputStream = new FileInputStream(testfile);
+        Map<String, String[]> data = new TreeMap<>();
+        int counter = 0;
+        Workbook wb = WorkbookFactory.create(fileInputStream);
+        Sheet sheet = wb.getSheetAt(1);
+        Row row;
+        Cell cell;
+        boolean isNull = false;
+        do {
+            try {
+                row = sheet.getRow(counter);
+                cell = row.getCell(0);
+//                System.out.println(cell.toString());
+                if (!(cell == null || cell.getCellType() == Cell.CELL_TYPE_BLANK)) {
+                    firstColumn.add(cell.toString());
+                }
+                printNonEmptyCell(cell);
+                counter++;
+
+            } catch (Exception e) {
+                isNull = true;
+            }
+        } while (isNull != true);
+        fileInputStream.close();
+        System.out.println("++++++++++++++++++++++++++++++++++++");
+        System.out.println(firstColumn);
+        openDocumentAndIterateThroughFirstColumn(testfile, firstColumnSplitted);
+        System.out.println("====================================");
+        System.out.println(firstColumn);
+        ArrayList<String> splitted = new ArrayList<>();
+        for (String s:firstColumn) {
+            if ((Pattern.compile("\\d+\\+\\d+").matcher(s).find()==true)) {
+                System.out.println("!!!!SPLIT:");
+//                splitString2(s);
+                String[] tmp = splitString2(s);
+                splitted.addAll(Arrays.asList(tmp));
+            }
+        }
+        System.out.println("==============");
+        System.out.println(splitted);
+        memoryUsed();
+        writeExcel(splitted);
+//        writeExcel(firstColumn);
+
+//        openDocumentAndIterateThroughFirstColumn(testfile, firstColumn);
+//        System.out.println("firstColumn normal:"+(firstColumn));
+//        for (int i = 0; i < firstColumn.size(); i++) {
+//            String splitPattern = "\\(|км" + ", " + "\\d\\)$";
+//            String s = firstColumn.get(i);
+//            System.out.println(s.split(splitPattern));
 
 //            String tmp = DF.formatCellValue(cell);
 
@@ -34,22 +91,130 @@ public class App {
 //                firstColumnSplitted.add(s.split(splitPattern));
 
 //            }
-        }
+//        }
 //        System.out.println(Arrays.asList(firstColumnSplitted));
 
     }
 
-    public static void splitString2(String string) {
-//        String tokens[] = null;
-        String splitPattern = "\\(|км" + ", ";
-//        tokens = string.split(splitPattern);
-//        System.out.println("Pattern: " + splitPattern + "\n");
-//        System.out.println("Our string: " + string + "\n");
-//        System.out.println("To tokens: ");
-//        for (int i = 0; i < tokens.length; i++) {
-//            System.out.println(tokens[i]);
+    public static void writeExcel (ArrayList arrayList) {
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("Employee Data");
+        Map<String, ArrayList<String>> data = new TreeMap<>();
+        Map<String, String[]> data2 = new TreeMap<>();
+        int counter = 0;
+        int counter2 = 0;
+        for (Object anArrayList : arrayList) {
+//            if (!(Pattern.compile("\\d+\\+\\d+").matcher(String.valueOf(anArrayList)).find()==true)) {
+                String s = String.valueOf(anArrayList);
+                data.put(String.valueOf(counter++), new ArrayList(Arrays.asList(new String[]{s})));
+//            } else {
+//                String s = String.valueOf(anArrayList);
+//                data2.put(String.valueOf(counter2++), new String[]{s});
+//            }
+        }
+//        Row keyRow = sheet.createRow(0);
+        int row = 0;
+        int col = 0;
+        for (String key : data.keySet()) {
+            Row row2 = sheet.createRow(row++);
+            row2.createCell(col).setCellValue(key);
+            ArrayList<String> values = data.get(key);
+            for (int i = 0; i < values.size(); i++) {
+                Row r = sheet.getRow(i+1);
+                if (r == null) { r = sheet.createRow(i+1); }
+                r.createCell(col).setCellValue(values.get(i));
+            }
+            col++;
+        }
+
+//        data.put("1", new Object[]{"ID", "NAME", "LASTNAME"});
+//        data.put("2", arrayList.get());
+//        data.put("3", new Object[]{2, "Lokesh", "Gupta"});
+//        data.put("4", new Object[]{3, "John", "Adwards"});
+//        data.put("5", new Object[]{4, "Brian", "Schultz"});
+
+        //Iterate over data and write to sheet
+        Set<String> keyset = data.keySet();
+        int rownum = 0;
+        int rownum2 = 0;
+
+
+//        for (String key : keyset) {
+//            Row row = sheet.createRow(rownum++);
+//            Object[] objArr = data.get(key);
+//            int cellnum = 0;
+//            row.createCell(col).setCellValue(key);
+//            ArrayList<String> values = data.get(key);
+//            for (int i = 0; i < values.length; i++) {
+//                Row r = sheet.getRow(i+1);
+//                if (r == null) { r = sheet.createRow(i+1); }
+//                r.createCell(col).setCellValue(values.(i));
+//            }
+//            col++;
+//            }
+//            for (int i = 0; i < objArr.length; i++) {
+//                Object obj = objArr[i];
+//                Cell cell = row.createCell(cellnum++);
+////                if (obj instanceof String || Pattern.compile("\\d+\\+\\d+").matcher(String.valueOf(String.valueOf(obj))).find() == true) {
+////                    cell.setCellValue((String) obj);
+////                }
+//                if (obj instanceof String) {
+//                    cell.setCellValue((String) obj);
+//                } else if (obj instanceof Integer)
+//                    cell.setCellValue((Integer) obj);
+//            }
 //        }
-//        System.out.println("\n");
+        try {
+            //Write the workbook in file system
+            FileOutputStream out = new FileOutputStream(new File("C:\\test\\howtodoinjava_demo.xlsx"));
+            workbook.write(out);
+            out.close();
+            System.out.println("C:" + File.separator + "test" + File.separator + "howtodoinjava_demo.xlsx written successfully on disk.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public static void printMapV2 (Map <?, ?> map) {
+        StringBuilder sb = new StringBuilder(128);
+        sb.append("{");
+        for (Map.Entry<?,?> entry : map.entrySet()) {
+            if (sb.length()>1) {
+                sb.append(", ");
+            }
+            sb.append(entry.getKey()).append("=").append(entry.getValue());
+        }
+        sb.append("}");
+        System.out.println(sb);
+    }
+
+    public static void printTreeMap(Map<String, String[]> treeMap) {
+        System.out.print( "TreeMap: " );
+
+        // Use an Iterator to traverse the mappings in the TreeMap.  Note
+        // that the mappings are in sorted order (with respect to the keys).
+        Iterator iterator = treeMap.entrySet().iterator();
+
+        while (iterator.hasNext()) {
+            Map.Entry entry = (Map.Entry) iterator.next();
+            System.out.print( "(" + entry.getKey() + ": " +
+                    (entry.getValue()).toString() + "), " );
+        }
+        System.out.println();
+    }
+
+    public static String[] splitString2(String string) {
+        String tokens[] = null;
+//        String splitPattern = "\\(|км" + ", ";
+        String splitPattern = "км|(км)";
+        tokens = string.split(splitPattern);
+        System.out.println("Pattern: " + splitPattern + "\n");
+        System.out.println("Our string: " + string + "\n");
+        System.out.println("To tokens: ");
+        for (int i = 0; i < tokens.length; i++) {
+            System.out.println(tokens[i]);
+        }
+        System.out.println("\n");
+        return tokens;
     }
 
     public static void splitString3(String string) {
