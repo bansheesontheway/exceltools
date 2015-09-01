@@ -91,7 +91,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>ua.kiev.tsv.excel.old.App</mainClass>
+                            <mainClass>App</mainClass>
                             <classpathPrefix>deps/</classpathPrefix>
                         </manifest>
                     </archive>
