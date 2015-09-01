@@ -16,7 +16,10 @@ import java.util.regex.Pattern;
 
 public class App {
     static final DataFormatter DF = new DataFormatter();
-    public static String testfile = "C:\\test\\24.07.2015\\Миколаїв.xlsx";
+//    public static String testfile = "C:\\test\\24.07.2015\\Миколаїв.xlsx";
+    public static String testfile = "/home/tsv/temp/excel/crap.xlsx";
+    public static String outputfile = "/home/tsv/temp/excel/crapfixed.xlsx";
+
     private static final long MEGABYTE = 1024L * 1024L;
 
     public static long bytesToMegabytes(long bytes) {
@@ -96,6 +99,19 @@ public class App {
 
     }
 
+    public static void writeFile (Workbook workbook, String filename) {
+        try {
+            //Write the workbook in file system
+            FileOutputStream out = new FileOutputStream(new File(outputfile));
+            workbook.write(out);
+            out.close();
+
+            System.out.println(new File(outputfile).getAbsoluteFile()+" written successfully on disk.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void writeExcel (ArrayList arrayList) {
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("Employee Data");
@@ -112,17 +128,24 @@ public class App {
 //                data2.put(String.valueOf(counter2++), new String[]{s});
 //            }
         }
-//        Row keyRow = sheet.createRow(0);
+        Row keyRow = sheet.createRow(0);
         int row = 0;
         int col = 0;
         for (String key : data.keySet()) {
             Row row2 = sheet.createRow(row++);
-            row2.createCell(col).setCellValue(key);
+            keyRow.createCell(col).setCellValue(key);
             ArrayList<String> values = data.get(key);
             for (int i = 0; i < values.size(); i++) {
-                Row r = sheet.getRow(i+1);
-                if (r == null) { r = sheet.createRow(i+1); }
-                r.createCell(col).setCellValue(values.get(i));
+                Row inlayRow = sheet.getRow(i);
+                if (inlayRow == null) {
+                    inlayRow = sheet.createRow(i);
+                }
+                if (!Pattern.compile("\\d+\\+\\d+").matcher(values.get(i)).find()) {
+                    inlayRow.createCell(col).setCellValue(values.get(i));
+                } else {
+                    inlayRow.createCell(col).setCellValue(values.get(i));
+                }
+
             }
             col++;
         }
@@ -164,15 +187,16 @@ public class App {
 //                    cell.setCellValue((Integer) obj);
 //            }
 //        }
-        try {
-            //Write the workbook in file system
-            FileOutputStream out = new FileOutputStream(new File("C:\\test\\howtodoinjava_demo.xlsx"));
-            workbook.write(out);
-            out.close();
-            System.out.println("C:" + File.separator + "test" + File.separator + "howtodoinjava_demo.xlsx written successfully on disk.");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            //Write the workbook in file system
+//            FileOutputStream out = new FileOutputStream(new File("C:\\test\\howtodoinjava_demo.xlsx"));
+//            workbook.write(out);
+//            out.close();
+//            System.out.println("C:" + File.separator + "test" + File.separator + "howtodoinjava_demo.xlsx written successfully on disk.");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        writeFile(workbook, outputfile);
     }
     public static void printMapV2 (Map <?, ?> map) {
         StringBuilder sb = new StringBuilder(128);
