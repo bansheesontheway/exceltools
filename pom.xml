@@ -3,9 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ua.kiev.orjo</groupId>
     <artifactId>ua.kiev.orjo</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <url>http://maven.apache.org</url>
+
+    <modules>
+        <module>excel</module>
+    </modules>
+
     <properties>
         <junit.version>4.8.2</junit.version>
         <maven-compiler-plugin.version>3.0</maven-compiler-plugin.version>
